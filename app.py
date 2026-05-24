@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from datetime import date
 import pymysql, hashlib, os
+from ia import prever_espera
 
 app = Flask(__name__)
 app.secret_key = 'odontoflow-secret-2024'
@@ -163,7 +164,9 @@ def agendar():
         conn.commit()
         conn.close()
         proc = PROCEDIMENTOS[procedimento]
-        flash(f'Consulta agendada! Ticket #{ticket} · {proc["label"]} · {hora} - Tempo estimado: {proc["tempo"]}.', 'sucesso')
+        pacientes_antes_count = ticket - 1
+        minutos_ia, msg_ia = prever_espera(procedimento, data, hora, pacientes_antes_count)
+        flash(f'Consulta agendada! Ticket #{ticket} · {proc["label"]} · {hora} — IA preve: {msg_ia}.', 'sucesso')
         return redirect(url_for('fila'))
     return render_template('agendar.html', hoje=date.today().isoformat())
 
@@ -192,6 +195,13 @@ def fila():
         d['meu'] = eh_meu
         partes = row['nome_paciente'].split()
         d['nome_exibido'] = f"{partes[0]} {partes[-1][0]}." if len(partes) >= 2 else partes[0]
+
+        # IA prevê espera para cada paciente na fila
+        minutos_ia, msg_ia = prever_espera(
+            row['procedimento'], str(row['data']), row['hora'], i
+        )
+        d['previsao_ia'] = msg_ia
+
         fila_data.append(d)
         if eh_meu:
             horas = minutos_acumulados // 60
@@ -204,6 +214,7 @@ def fila():
                 'hora': row['hora'],
                 'posicao': i + 1,
                 'espera_estimada': espera,
+                'previsao_ia': msg_ia,
             }
         minutos_acumulados += PROCEDIMENTOS.get(row['procedimento'], {}).get('minutos', 0)
 
