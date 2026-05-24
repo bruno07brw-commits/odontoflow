@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Cadastro — OdontoFlow{% endblock %}
+{% block navbar %}{% endblock %}
+{% block extra_css %}
+<style>
+  body{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1.5rem;}
+  .wrap{width:100%;max-width:440px;}
+  .wrap h1{font-size:1.8rem;margin-bottom:0.3rem;}
+  .subtitulo{font-size:0.9rem;color:var(--muted);margin-bottom:1.75rem;}
+  .login-logo{display:flex;align-items:center;gap:10px;margin-bottom:2rem;}
+</style>
+{% endblock %}
+{% block content %}
+<div class="wrap animar">
+  <div class="card">
+    <div class="login-logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8.5 2 6 4.5 6 7c0 1.5.5 3 1.2 4.2L8 20c.3 1.1 1.2 2 2.5 2h3c1.3 0 2.2-.9 2.5-2l.8-8.8C17.5 10 18 8.5 18 7c0-2.5-2.5-5-6-5z"/></svg>
+      </div>
+      <span class="logo-texto">OdontoFlow</span>
+    </div>
+    <h1>Criar conta</h1>
+    <p class="subtitulo">Cadastre-se para agendar sua consulta</p>
+    <form method="POST" action="{{ url_for('cadastro') }}">
+      <label for="nome">Nome completo</label>
+      <input type="text" id="nome" name="nome" placeholder="Seu nome" required>
+      <label for="email">E-mail</label>
+      <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" name="senha" placeholder="Minimo 6 caracteres" required>
+      <button type="submit" class="btn btn-primary" style="margin-top:1.5rem;">Criar conta</button>
+    </form>
+    <div class="divisor">ou</div>
+    <p class="form-rodape">Ja tem conta? <a class="link" href="{{ url_for('login') }}">Entrar</a></p>
+  </div>
+</div>
+{% endblock %}

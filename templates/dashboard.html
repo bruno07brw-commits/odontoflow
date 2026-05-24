@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — OdontoFlow{% endblock %}
+{% block extra_css %}
+<style>
+.pagina{max-width:860px;margin:2.5rem auto;padding:0 1.5rem;}
+.pagina h1{font-size:1.8rem;margin-bottom:0.3rem;}
+.subtitulo{font-size:0.9rem;color:var(--muted);margin-bottom:2rem;}
+.cards-resumo{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem;}
+.resumo-card{background:var(--branco);border-radius:var(--radius);box-shadow:var(--sombra);padding:1.25rem 1.5rem;}
+.resumo-label{font-size:0.8rem;color:var(--muted);margin-bottom:0.4rem;}
+.resumo-valor{font-family:'DM Serif Display',serif;font-size:2rem;}
+.resumo-sub{font-size:0.8rem;color:var(--muted);margin-top:0.2rem;}
+.tabela-wrap{background:var(--branco);border-radius:var(--radius);box-shadow:var(--sombra);overflow:hidden;}
+.tabela-titulo{padding:1.25rem 1.5rem;font-family:'DM Serif Display',serif;font-size:1.1rem;border-bottom:1px solid var(--cinza-borda);display:flex;align-items:center;justify-content:space-between;}
+table{width:100%;border-collapse:collapse;font-size:0.88rem;}
+thead th{padding:0.75rem 1.25rem;text-align:left;font-size:0.78rem;font-weight:500;color:var(--muted);background:var(--cinza-bg);border-bottom:1px solid var(--cinza-borda);}
+tbody td{padding:0.9rem 1.25rem;border-bottom:1px solid var(--cinza-borda);}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--cinza-bg);}
+.proc-tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.78rem;font-weight:500;}
+.tag-canal{background:var(--azul-claro);color:var(--azul);}
+.tag-aparelho{background:var(--verde-claro);color:var(--verde);}
+.tag-extracao{background:var(--laranja-claro);color:var(--laranja);}
+.status-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.78rem;font-weight:500;}
+.status-aguardando{background:#fef3c7;color:#92400e;}
+.status-concluido{background:var(--verde-claro);color:var(--verde);}
+.status-cancelado{background:#fee2e2;color:var(--vermelho);}
+.tabela-vazia{padding:3rem;text-align:center;color:var(--muted);}
+</style>
+{% endblock %}
+{% block content %}
+<div class="pagina">
+<h1 class="animar">Dashboard</h1>
+<p class="subtitulo animar animar-2">Resumo das consultas de hoje — {{ hoje }}</p>
+<div class="cards-resumo animar animar-2">
+  <div class="resumo-card"><div class="resumo-label">Total agendado</div><div class="resumo-valor">{{ stats.total }}</div><div class="resumo-sub">consultas hoje</div></div>
+  <div class="resumo-card"><div class="resumo-label">Aguardando</div><div class="resumo-valor">{{ stats.aguardando }}</div><div class="resumo-sub">na fila</div></div>
+  <div class="resumo-card"><div class="resumo-label">Concluidos</div><div class="resumo-valor">{{ stats.concluidos }}</div><div class="resumo-sub">atendimentos</div></div>
+  <div class="resumo-card"><div class="resumo-label">Tempo medio</div><div class="resumo-valor">{{ stats.tempo_medio }}</div><div class="resumo-sub">por atendimento</div></div>
+</div>
+<div class="tabela-wrap animar animar-3">
+  <div class="tabela-titulo">Consultas do dia
+    <a href="{{ url_for('agendar') }}" class="btn btn-outline" style="font-size:0.85rem;padding:0.5rem 1rem;">+ Agendar</a>
+  </div>
+  {% if agendamentos %}
+  <table>
+    <thead><tr><th>#</th><th>Paciente</th><th>Procedimento</th><th>Horario</th><th>Tempo est.</th><th>Status</th></tr></thead>
+    <tbody>
+    {% for a in agendamentos %}
+    <tr>
+      <td style="font-weight:500;color:var(--azul);">{{ a.ticket }}</td>
+      <td>{{ a.nome_paciente }}</td>
+      <td><span class="proc-tag tag-{{ a.procedimento }}">{{ a.procedimento_label }}</span></td>
+      <td>{{ a.hora }}</td>
+      <td style="color:var(--muted);">{{ a.tempo_estimado }}</td>
+      <td><span class="status-badge status-{{ a.status }}">{{ a.status_label }}</span></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="tabela-vazia">Nenhuma consulta agendada para hoje.</div>
+  {% endif %}
+</div>
+</div>
+{% endblock %}

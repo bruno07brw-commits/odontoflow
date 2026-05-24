@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}OdontoFlow{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+{% block navbar %}
+<nav class="navbar">
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C8.5 2 6 4.5 6 7c0 1.5.5 3 1.2 4.2L8 20c.3 1.1 1.2 2 2.5 2h3c1.3 0 2.2-.9 2.5-2l.8-8.8C17.5 10 18 8.5 18 7c0-2.5-2.5-5-6-5z"/>
+      </svg>
+    </div>
+    <span class="logo-texto">OdontoFlow</span>
+  </div>
+
+  <div class="navbar-links">
+    {% if session.get('usuario_id') %}
+      <a href="{{ url_for('fila') }}"
+         class="{% if request.endpoint == 'fila' %}ativo{% endif %}">Fila</a>
+      <a href="{{ url_for('dashboard') }}"
+         class="{% if request.endpoint == 'dashboard' %}ativo{% endif %}">Dashboard</a>
+      <a href="{{ url_for('logout') }}">Sair</a>
+    {% endif %}
+  </div>
+</nav>
+{% endblock %}
+
+<main>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="flash flash-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</main>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

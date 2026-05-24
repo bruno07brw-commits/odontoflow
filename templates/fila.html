@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Fila — OdontoFlow{% endblock %}
+{% block extra_css %}
+<style>
+.pagina{max-width:720px;margin:2.5rem auto;padding:0 1.5rem;}
+.topo{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;}
+.topo h1{font-size:1.8rem;}
+.topo p{font-size:0.9rem;color:var(--muted);margin-top:0.2rem;}
+.meu-ticket{background:var(--azul);color:#fff;border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.meu-ticket h2{font-size:1.1rem;font-weight:500;opacity:0.85;margin-bottom:0.3rem;}
+.ticket-num{font-family:'DM Serif Display',serif;font-size:3rem;line-height:1;}
+.ticket-info{font-size:0.9rem;opacity:0.85;margin-top:0.5rem;}
+.ticket-status{text-align:right;}
+.posicao-label{font-size:0.85rem;opacity:0.75;margin-bottom:0.25rem;}
+.posicao-num{font-family:'DM Serif Display',serif;font-size:2.5rem;}
+.tempo-label{font-size:0.82rem;opacity:0.75;margin-top:0.2rem;}
+.fila-lista{background:var(--branco);border-radius:var(--radius);box-shadow:var(--sombra);overflow:hidden;}
+.fila-header{display:grid;grid-template-columns:60px 1fr 1fr 120px;padding:0.75rem 1.25rem;background:var(--cinza-bg);font-size:0.8rem;font-weight:500;color:var(--muted);border-bottom:1px solid var(--cinza-borda);}
+.fila-item{display:grid;grid-template-columns:60px 1fr 1fr 120px;padding:1rem 1.25rem;border-bottom:1px solid var(--cinza-borda);align-items:center;font-size:0.9rem;}
+.fila-item:last-child{border-bottom:none;}
+.fila-item.destaque{background:var(--azul-claro);font-weight:500;}
+.num-posicao{font-weight:600;color:var(--azul);}
+.proc-tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.78rem;font-weight:500;}
+.tag-canal{background:var(--azul-claro);color:var(--azul);}
+.tag-aparelho{background:var(--verde-claro);color:var(--verde);}
+.tag-extracao{background:var(--laranja-claro);color:var(--laranja);}
+.tempo-est{font-size:0.85rem;color:var(--muted);}
+.fila-vazia{padding:3rem;text-align:center;color:var(--muted);}
+</style>
+{% endblock %}
+{% block content %}
+<div class="pagina">
+<div class="topo animar">
+  <div><h1>Fila de espera</h1><p>Acompanhe sua posicao em tempo real</p></div>
+  <a href="{{ url_for('agendar') }}" class="btn btn-primary" style="width:auto;">+ Nova consulta</a>
+</div>
+{% if meu_agendamento %}
+<div class="meu-ticket animar animar-2">
+  <div>
+    <h2>Seu ticket</h2>
+    <div class="ticket-num">#{{ meu_agendamento.ticket }}</div>
+    <div class="ticket-info">{{ meu_agendamento.procedimento_label }} &nbsp;·&nbsp; {{ meu_agendamento.data }} as {{ meu_agendamento.hora }}</div>
+  </div>
+  <div class="ticket-status">
+    <div class="posicao-label">Posicao na fila</div>
+    <div class="posicao-num">{{ meu_agendamento.posicao }}º</div>
+    <div class="tempo-label">≈ {{ meu_agendamento.espera_estimada }} de espera</div>
+  </div>
+</div>
+{% endif %}
+<div class="fila-lista animar animar-3">
+{% if fila %}
+<div class="fila-header"><span>#</span><span>Paciente</span><span>Procedimento</span><span>Tempo est.</span></div>
+{% for item in fila %}
+<div class="fila-item {% if item.meu %}destaque{% endif %}">
+  <span class="num-posicao">{{ loop.index }}</span>
+  <span>{% if item.meu %}Voce{% else %}{{ item.nome_exibido }}{% endif %}</span>
+  <span><span class="proc-tag tag-{{ item.procedimento }}">{{ item.procedimento_label }}</span></span>
+  <span class="tempo-est">{{ item.tempo_estimado }}</span>
+</div>
+{% endfor %}
+{% else %}
+<div class="fila-vazia">Nenhum agendamento na fila hoje.</div>
+{% endif %}
+</div>
+</div>
+{% endblock %}

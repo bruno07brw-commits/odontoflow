@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --azul: #0a3d6b; --azul-medio: #0c4a80; --azul-claro: #e8f4fd;
+  --verde: #0e7c5a; --verde-claro: #e4f7f1;
+  --laranja: #d97706; --laranja-claro: #fef3c7;
+  --vermelho: #dc2626; --cinza-bg: #f5f4f0; --cinza-borda: #d1d5db;
+  --texto: #1a1a1a; --muted: #6b7280; --branco: #ffffff;
+  --sombra: 0 4px 40px rgba(0,0,0,0.08); --radius: 16px; --radius-sm: 10px;
+}
+
+body { font-family: 'DM Sans', sans-serif; background: var(--cinza-bg); color: var(--texto); min-height: 100vh; }
+h1, h2, h3 { font-family: 'DM Serif Display', serif; }
+
+.card { background: var(--branco); border-radius: var(--radius); box-shadow: var(--sombra); padding: 2.5rem; }
+
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon { width: 40px; height: 40px; background: var(--azul); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+.logo-icon svg { width: 20px; height: 20px; fill: #fff; }
+.logo-texto { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--azul); }
+
+label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.35rem; margin-top: 1rem; color: var(--texto); }
+input[type="text"], input[type="email"], input[type="password"], input[type="date"], select {
+  width: 100%; padding: 0.75rem 1rem; border: 1.5px solid var(--cinza-borda);
+  border-radius: var(--radius-sm); font-size: 0.95rem; font-family: 'DM Sans', sans-serif;
+  color: var(--texto); background: var(--branco); outline: none; transition: border-color 0.2s;
+}
+input:focus, select:focus { border-color: var(--azul); }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0.8rem 1.5rem; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 500; border: none; cursor: pointer; transition: background 0.2s, transform 0.1s; text-decoration: none; }
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--azul); color: #fff; width: 100%; }
+.btn-primary:hover { background: var(--azul-medio); }
+.btn-outline { background: transparent; color: var(--azul); border: 1.5px solid var(--azul); }
+.btn-outline:hover { background: var(--azul-claro); }
+
+.flash { border-radius: 8px; padding: 0.65rem 1rem; font-size: 0.85rem; margin-bottom: 1rem; }
+.flash-erro { background: #fef2f2; border: 1px solid #fecaca; color: var(--vermelho); }
+.flash-sucesso { background: var(--verde-claro); border: 1px solid #6ee7b7; color: var(--verde); }
+.flash-info { background: var(--azul-claro); border: 1px solid #93c5fd; color: var(--azul); }
+
+.navbar { background: var(--branco); border-bottom: 1px solid var(--cinza-borda); padding: 0 2rem; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+.navbar-links { display: flex; align-items: center; gap: 1.5rem; }
+.navbar-links a { font-size: 0.9rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+.navbar-links a:hover { color: var(--azul); }
+.navbar-links a.ativo { color: var(--azul); font-weight: 500; }
+
+.animar { animation: subir 0.45s ease both; }
+@keyframes subir { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+.animar-2 { animation-delay: 0.1s; }
+.animar-3 { animation-delay: 0.2s; }
+.animar-4 { animation-delay: 0.3s; }
+
+.link { color: var(--azul); text-decoration: none; font-weight: 500; }
+.link:hover { text-decoration: underline; }
+.form-rodape { text-align: center; font-size: 0.85rem; color: var(--muted); margin-top: 1.25rem; }
+
+.divisor { text-align: center; font-size: 0.8rem; color: var(--muted); margin: 1.25rem 0; position: relative; }
+.divisor::before, .divisor::after { content: ''; position: absolute; top: 50%; width: 42%; height: 1px; background: var(--cinza-borda); }
+.divisor::before { left: 0; }
+.divisor::after { right: 0; }
