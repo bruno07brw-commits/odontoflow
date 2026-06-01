@@ -8,11 +8,11 @@ app.secret_key = 'odontoflow-secret-2024'
 
 # ── Configuração MySQL ─────────────────────────────────────────────────────────
 DB_CONFIG = {
-    'host':     'localhost',
-    'user':     'root',
-    'password': '',
+    'host': 'localhost',
+    'user': 'root',
+    'password': 'odonto123',   # sua senha aqui
     'database': 'odontoflow',
-    'charset':  'utf8mb4',
+    'charset': 'utf8mb4',
     'cursorclass': pymysql.cursors.DictCursor
 }
 
