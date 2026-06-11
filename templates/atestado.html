@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Atestado — OdontoFlow{% endblock %}
+{% block extra_css %}
+<style>
+.pagina{max-width:600px;margin:3rem auto;padding:0 1.5rem;}
+.atestado{background:#fff;border-radius:var(--radius);box-shadow:var(--sombra);padding:3rem;}
+.cabecalho{border-bottom:2px solid var(--azul-claro);padding-bottom:1.5rem;margin-bottom:2rem;}
+.cabecalho h1{font-size:1.8rem;color:var(--azul);margin-bottom:0.25rem;}
+.cabecalho p{font-size:0.9rem;color:var(--muted);}
+.campo{margin-bottom:1.25rem;}
+.campo-label{font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;}
+.campo-valor{font-size:1rem;color:var(--texto);font-weight:500;}
+.divider{border:none;border-top:1px solid var(--cinza-borda);margin:2rem 0;}
+.texto-legal{font-size:0.88rem;color:var(--muted);line-height:1.7;}
+.assinatura{margin-top:3rem;text-align:center;}
+.assinatura .linha{border-top:1px solid var(--texto);width:200px;margin:0 auto 0.5rem;}
+.assinatura p{font-size:0.85rem;color:var(--muted);}
+.rodape{text-align:center;font-size:0.8rem;color:var(--muted);margin-top:1.5rem;}
+.btn-voltar{margin-bottom:1.5rem;display:inline-block;}
+@media print{.btn-voltar{display:none;}.navbar{display:none;}}
+</style>
+{% endblock %}
+{% block content %}
+<div class="pagina">
+  <a href="{{ url_for('dashboard') }}" class="btn btn-outline btn-voltar">← Voltar</a>
+  <div class="atestado">
+    <div class="cabecalho">
+      <h1>OdontoFlow</h1>
+      <p>Atestado Médico Odontológico</p>
+    </div>
+
+    <div class="campo">
+      <div class="campo-label">Paciente</div>
+      <div class="campo-valor">{{ ag.nome_paciente }}</div>
+    </div>
+    <div class="campo">
+      <div class="campo-label">Procedimento realizado</div>
+      <div class="campo-valor">{{ proc.label }}</div>
+    </div>
+    <div class="campo">
+      <div class="campo-label">Data da consulta</div>
+      <div class="campo-valor">{{ ag.data }}</div>
+    </div>
+    <div class="campo">
+      <div class="campo-label">Horário</div>
+      <div class="campo-valor">{{ ag.hora }}</div>
+    </div>
+    <div class="campo">
+      <div class="campo-label">Repouso recomendado</div>
+      <div class="campo-valor">{{ proc.repouso }}</div>
+    </div>
+
+    <hr class="divider">
+
+    <p class="texto-legal">
+      Atesto que o(a) paciente acima identificado(a) compareceu a esta clínica odontológica
+      para realização do procedimento descrito, necessitando do período de repouso indicado.
+    </p>
+
+    <div class="assinatura">
+      <div class="linha"></div>
+      <p>Responsável Técnico — OdontoFlow</p>
+    </div>
+
+    <div class="rodape">Documento gerado em {{ hoje }}</div>
+  </div>
+</div>
+{% endblock %}

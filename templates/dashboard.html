@@ -26,6 +26,7 @@ tbody tr:hover{background:var(--cinza-bg);}
 .status-concluido{background:var(--verde-claro);color:var(--verde);}
 .status-cancelado{background:#fee2e2;color:var(--vermelho);}
 .tabela-vazia{padding:3rem;text-align:center;color:var(--muted);}
+.tabela-vazia p{margin-bottom:1rem;}
 </style>
 {% endblock %}
 {% block content %}
@@ -35,8 +36,8 @@ tbody tr:hover{background:var(--cinza-bg);}
 <div class="cards-resumo animar animar-2">
   <div class="resumo-card"><div class="resumo-label">Total agendado</div><div class="resumo-valor">{{ stats.total }}</div><div class="resumo-sub">consultas hoje</div></div>
   <div class="resumo-card"><div class="resumo-label">Aguardando</div><div class="resumo-valor">{{ stats.aguardando }}</div><div class="resumo-sub">na fila</div></div>
-  <div class="resumo-card"><div class="resumo-label">Concluidos</div><div class="resumo-valor">{{ stats.concluidos }}</div><div class="resumo-sub">atendimentos</div></div>
-  <div class="resumo-card"><div class="resumo-label">Tempo medio</div><div class="resumo-valor">{{ stats.tempo_medio }}</div><div class="resumo-sub">por atendimento</div></div>
+  <div class="resumo-card"><div class="resumo-label">Concluídos</div><div class="resumo-valor">{{ stats.concluidos }}</div><div class="resumo-sub">atendimentos</div></div>
+  <div class="resumo-card"><div class="resumo-label">Tempo médio</div><div class="resumo-valor">{{ stats.tempo_medio }}</div><div class="resumo-sub">por atendimento</div></div>
 </div>
 <div class="tabela-wrap animar animar-3">
   <div class="tabela-titulo">Consultas do dia
@@ -44,8 +45,7 @@ tbody tr:hover{background:var(--cinza-bg);}
   </div>
   {% if agendamentos %}
   <table>
-    <thead><tr><th>#</th><th>Paciente</th><th>Procedimento</th><th>Horario</th><th>Tempo est.</th><th>Status</th></tr></thead>
-    <tbody>
+    <thead><tr><th>#</th><th>Paciente</th><th>Procedimento</th><th>Horário</th><th>Tempo est.</th><th>Status</th><th>Atestado</th></tr></thead>
     {% for a in agendamentos %}
     <tr>
       <td style="font-weight:500;color:var(--azul);">{{ a.ticket }}</td>
@@ -53,13 +53,17 @@ tbody tr:hover{background:var(--cinza-bg);}
       <td><span class="proc-tag tag-{{ a.procedimento }}">{{ a.procedimento_label }}</span></td>
       <td>{{ a.hora }}</td>
       <td style="color:var(--muted);">{{ a.tempo_estimado }}</td>
-      <td><span class="status-badge status-{{ a.status }}">{{ a.status_label }}</span></td>
+     <td><span class="status-badge status-{{ a.status }}">{{ a.status_label }}</span></td>
+<td><a href="/atestado/{{ a.id }}" class="btn btn-outline" style="font-size:0.78rem;padding:4px 10px;width:auto;">PDF</a></td>
     </tr>
     {% endfor %}
     </tbody>
   </table>
   {% else %}
-  <div class="tabela-vazia">Nenhuma consulta agendada para hoje.</div>
+  <div class="tabela-vazia">
+    <p>Nenhuma consulta agendada para hoje.</p>
+    <a href="{{ url_for('agendar') }}" class="btn btn-primary" style="width:auto;">Agendar agora</a>
+  </div>
   {% endif %}
 </div>
 </div>

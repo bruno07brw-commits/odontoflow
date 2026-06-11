@@ -6,7 +6,6 @@ from ia import prever_espera
 app = Flask(__name__)
 app.secret_key = 'odontoflow-secret-2024'
 
-# ── Configuração MySQL ─────────────────────────────────────────────────────────
 DB_CONFIG = {
     'host':     'localhost',
     'user':     'root',
@@ -16,50 +15,41 @@ DB_CONFIG = {
     'cursorclass': pymysql.cursors.DictCursor
 }
 
-# ── Procedimentos ──────────────────────────────────────────────────────────────
 PROCEDIMENTOS = {
-    'canal':    {'label': 'Canal',               'tempo': '90 - 120 min', 'minutos': 105},
-    'aparelho': {'label': 'Manutencao Aparelho',  'tempo': '30 - 45 min',  'minutos': 37},
-    'extracao': {'label': 'Extracao',             'tempo': '45 - 60 min',  'minutos': 52},
+    'canal':    {'label': 'Tratamento de Canal',    'tempo': '90 - 120 min', 'minutos': 105, 'repouso': '2 dias'},
+    'aparelho': {'label': 'Manutenção do Aparelho', 'tempo': '30 - 45 min',  'minutos': 37,  'repouso': 'Sem repouso necessário'},
+    'extracao': {'label': 'Extração de Dente',      'tempo': '45 - 60 min',  'minutos': 52,  'repouso': '1 dia'},
 }
 
-# ── Banco de dados ─────────────────────────────────────────────────────────────
 def get_db():
     return pymysql.connect(**DB_CONFIG)
 
 def init_db():
     conn = get_db()
     with conn.cursor() as cur:
-        cur.execute('''
-            CREATE TABLE IF NOT EXISTS usuarios (
-                id      INT AUTO_INCREMENT PRIMARY KEY,
-                nome    VARCHAR(150) NOT NULL,
-                email   VARCHAR(150) NOT NULL UNIQUE,
-                senha   VARCHAR(64)  NOT NULL,
-                perfil  VARCHAR(20)  NOT NULL DEFAULT 'paciente'
-            )
-        ''')
-        cur.execute('''
-            CREATE TABLE IF NOT EXISTS agendamentos (
-                id           INT AUTO_INCREMENT PRIMARY KEY,
-                usuario_id   INT          NOT NULL,
-                procedimento VARCHAR(20)  NOT NULL,
-                data         DATE         NOT NULL,
-                hora         VARCHAR(5)   NOT NULL,
-                obs          TEXT,
-                status       VARCHAR(20)  NOT NULL DEFAULT 'aguardando',
-                ticket       INT,
-                criado_em    TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
-            )
-        ''')
+        cur.execute('''CREATE TABLE IF NOT EXISTS usuarios (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            nome VARCHAR(150) NOT NULL,
+            email VARCHAR(150) NOT NULL UNIQUE,
+            senha VARCHAR(64) NOT NULL,
+            perfil VARCHAR(20) NOT NULL DEFAULT 'paciente')''')
+        cur.execute('''CREATE TABLE IF NOT EXISTS agendamentos (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            usuario_id INT NOT NULL,
+            procedimento VARCHAR(20) NOT NULL,
+            data DATE NOT NULL,
+            hora VARCHAR(5) NOT NULL,
+            obs TEXT,
+            status VARCHAR(20) NOT NULL DEFAULT 'aguardando',
+            ticket INT,
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (usuario_id) REFERENCES usuarios(id))''')
     conn.commit()
     conn.close()
 
 def hash_senha(senha):
     return hashlib.sha256(senha.encode()).hexdigest()
 
-# ── Helpers ────────────────────────────────────────────────────────────────────
 def usuario_logado():
     return session.get('usuario_id') is not None
 
@@ -69,19 +59,16 @@ def enriquecer(row):
     row['tempo_estimado']     = proc.get('tempo', '-')
     row['status_label'] = {
         'aguardando': 'Aguardando',
-        'concluido':  'Concluido',
+        'concluido':  'Concluído',
         'cancelado':  'Cancelado',
     }.get(row.get('status', ''), row.get('status', ''))
     return row
-
-# ── Rotas ──────────────────────────────────────────────────────────────────────
 
 @app.route('/')
 def index():
     if usuario_logado():
         return redirect(url_for('agendar'))
     return redirect(url_for('login'))
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -92,8 +79,7 @@ def login():
         senha = request.form.get('senha', '')
         conn = get_db()
         with conn.cursor() as cur:
-            cur.execute('SELECT * FROM usuarios WHERE email=%s AND senha=%s',
-                        (email, hash_senha(senha)))
+            cur.execute('SELECT * FROM usuarios WHERE email=%s AND senha=%s', (email, hash_senha(senha)))
             user = cur.fetchone()
         conn.close()
         if user:
@@ -103,7 +89,6 @@ def login():
             return redirect(url_for('agendar'))
         flash('E-mail ou senha incorretos.', 'erro')
     return render_template('login.html')
-
 
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
@@ -119,8 +104,7 @@ def cadastro():
         try:
             conn = get_db()
             with conn.cursor() as cur:
-                cur.execute('INSERT INTO usuarios (nome, email, senha) VALUES (%s, %s, %s)',
-                            (nome, email, hash_senha(senha)))
+                cur.execute('INSERT INTO usuarios (nome, email, senha) VALUES (%s, %s, %s)', (nome, email, hash_senha(senha)))
                 conn.commit()
                 cur.execute('SELECT * FROM usuarios WHERE email=%s', (email,))
                 user = cur.fetchone()
@@ -131,15 +115,13 @@ def cadastro():
             flash('Conta criada! Agende sua consulta.', 'sucesso')
             return redirect(url_for('agendar'))
         except pymysql.err.IntegrityError:
-            flash('Este e-mail ja esta cadastrado.', 'erro')
+            flash('Este e-mail já está cadastrado.', 'erro')
     return render_template('cadastro.html')
-
 
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('login'))
-
 
 @app.route('/agendar', methods=['GET', 'POST'])
 def agendar():
@@ -151,37 +133,33 @@ def agendar():
         hora         = request.form.get('hora', '')
         obs          = request.form.get('obs', '').strip()
         if procedimento not in PROCEDIMENTOS:
-            flash('Selecione um procedimento valido.', 'erro')
+            flash('Selecione um procedimento válido.', 'erro')
             return render_template('agendar.html', hoje=date.today().isoformat())
         conn = get_db()
         with conn.cursor() as cur:
             cur.execute('SELECT COUNT(*) as total FROM agendamentos WHERE data=%s', (data,))
             ticket = cur.fetchone()['total'] + 1
-            cur.execute('''INSERT INTO agendamentos
-                           (usuario_id, procedimento, data, hora, obs, ticket)
+            cur.execute('''INSERT INTO agendamentos (usuario_id, procedimento, data, hora, obs, ticket)
                            VALUES (%s, %s, %s, %s, %s, %s)''',
                         (session['usuario_id'], procedimento, data, hora, obs, ticket))
         conn.commit()
         conn.close()
         proc = PROCEDIMENTOS[procedimento]
-        pacientes_antes_count = ticket - 1
-        minutos_ia, msg_ia = prever_espera(procedimento, data, hora, pacientes_antes_count)
-        flash(f'Consulta agendada! Ticket #{ticket} · {proc["label"]} · {hora} — IA preve: {msg_ia}.', 'sucesso')
+        minutos_ia, msg_ia = prever_espera(procedimento, data, hora, ticket - 1)
+        flash(f'Consulta agendada! Ticket #{ticket} · {proc["label"]} · {hora} — IA prevê: {msg_ia}.', 'sucesso')
         return redirect(url_for('fila'))
     return render_template('agendar.html', hoje=date.today().isoformat())
-
 
 @app.route('/fila')
 def fila():
     if not usuario_logado():
         return redirect(url_for('login'))
-    hoje = date.today().isoformat()
     conn = get_db()
     with conn.cursor() as cur:
         cur.execute('''SELECT a.*, u.nome as nome_paciente
                        FROM agendamentos a JOIN usuarios u ON a.usuario_id=u.id
-                       WHERE a.data=%s AND a.status='aguardando'
-                       ORDER BY a.ticket''', (hoje,))
+                       WHERE a.status='aguardando'
+                       ORDER BY a.data, a.ticket''')
         rows = cur.fetchall()
     conn.close()
 
@@ -195,18 +173,13 @@ def fila():
         d['meu'] = eh_meu
         partes = row['nome_paciente'].split()
         d['nome_exibido'] = f"{partes[0]} {partes[-1][0]}." if len(partes) >= 2 else partes[0]
-
-        # IA prevê espera para cada paciente na fila
-        minutos_ia, msg_ia = prever_espera(
-            row['procedimento'], str(row['data']), row['hora'], i
-        )
+        minutos_ia, msg_ia = prever_espera(row['procedimento'], str(row['data']), row['hora'], i)
         d['previsao_ia'] = msg_ia
-
         fila_data.append(d)
         if eh_meu:
             horas = minutos_acumulados // 60
             mins  = minutos_acumulados % 60
-            espera = f"{horas}h {mins:02d}min" if horas > 0 else (f"{mins} min" if mins > 0 else "Proximo!")
+            espera = f"{horas}h {mins:02d}min" if horas > 0 else (f"{mins} min" if mins > 0 else "Próximo!")
             meu_agendamento = {
                 'ticket': row['ticket'],
                 'procedimento_label': d['procedimento_label'],
@@ -220,18 +193,16 @@ def fila():
 
     return render_template('fila.html', fila=fila_data, meu_agendamento=meu_agendamento)
 
-
 @app.route('/dashboard')
 def dashboard():
     if not usuario_logado():
         return redirect(url_for('login'))
-    hoje_iso = date.today().isoformat()
     hoje_fmt = date.today().strftime('%d/%m/%Y')
     conn = get_db()
     with conn.cursor() as cur:
         cur.execute('''SELECT a.*, u.nome as nome_paciente
                        FROM agendamentos a JOIN usuarios u ON a.usuario_id=u.id
-                       WHERE a.data=%s ORDER BY a.ticket''', (hoje_iso,))
+                       ORDER BY a.data, a.ticket''')
         rows = cur.fetchall()
     conn.close()
 
@@ -248,6 +219,24 @@ def dashboard():
 
     return render_template('dashboard.html', agendamentos=agendamentos, stats=stats, hoje=hoje_fmt)
 
+@app.route('/atestado/<int:agendamento_id>')
+def atestado(agendamento_id):
+    if not usuario_logado():
+        return redirect(url_for('login'))
+    conn = get_db()
+    with conn.cursor() as cur:
+        cur.execute('''SELECT a.*, u.nome as nome_paciente, u.email
+                       FROM agendamentos a JOIN usuarios u ON a.usuario_id=u.id
+                       WHERE a.id=%s''', (agendamento_id,))
+        ag = cur.fetchone()
+    conn.close()
+
+    if not ag:
+        flash('Agendamento não encontrado.', 'erro')
+        return redirect(url_for('dashboard'))
+
+    proc = PROCEDIMENTOS.get(ag['procedimento'], {})
+    return render_template('atestado.html', ag=ag, proc=proc, hoje=date.today().strftime('%d/%m/%Y'))
 
 if __name__ == '__main__':
     init_db()

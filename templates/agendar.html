@@ -34,24 +34,24 @@
 <label class="proc-card" id="card-canal" onclick="sel('canal')">
 <input type="radio" name="procedimento" value="canal" required>
 <div class="proc-icone azul">🦷</div>
-<div><p class="proc-nome">Tratamento de Canal</p><p class="proc-desc">Remocao da polpa infectada e selagem do dente.</p><span class="proc-tempo tempo-azul">⏱ 90-120 min</span></div>
+<div><p class="proc-nome">Tratamento de Canal</p><p class="proc-desc">Remoção da polpa infectada e selagem do dente.</p><span class="proc-tempo tempo-azul">⏱ 90-120 min</span></div>
 </label>
 <label class="proc-card" id="card-aparelho" onclick="sel('aparelho')">
 <input type="radio" name="procedimento" value="aparelho" required>
 <div class="proc-icone verde">😁</div>
-<div><p class="proc-nome">Manutencao do Aparelho</p><p class="proc-desc">Troca de borrachinhas e ajuste de fios.</p><span class="proc-tempo tempo-verde">⏱ 30-45 min</span></div>
+<div><p class="proc-nome">Manutenção do Aparelho</p><p class="proc-desc">Troca de borrachinhas e ajuste de fios.</p><span class="proc-tempo tempo-verde">⏱ 30-45 min</span></div>
 </label>
 <label class="proc-card" id="card-extracao" onclick="sel('extracao')">
 <input type="radio" name="procedimento" value="extracao" required>
 <div class="proc-icone laranja">🩺</div>
-<div><p class="proc-nome">Extracao de Dente</p><p class="proc-desc">Retirada com anestesia local.</p><span class="proc-tempo tempo-laranja">⏱ 45-60 min</span></div>
+<div><p class="proc-nome">Extração de Dente</p><p class="proc-desc">Retirada do dente com anestesia local.</p><span class="proc-tempo tempo-laranja">⏱ 45-60 min</span></div>
 </label>
 </div>
 <div class="aviso" id="aviso"></div>
-<div class="secao"><h2>Data e horario</h2>
+<div class="secao"><h2>Data e horário</h2>
 <div class="grid2">
 <div><label>Data</label><input type="date" name="data" required min="{{ hoje }}"></div>
-<div><label>Horario</label><select name="hora" required><option value="" disabled selected>Escolha</option><option>08:00</option><option>09:00</option><option>10:00</option><option>11:00</option><option>13:00</option><option>14:00</option><option>15:00</option><option>16:00</option></select></div>
+<div><label>Horário</label><select name="hora" required><option value="" disabled selected>Escolha</option><option>08:00</option><option>09:00</option><option>10:00</option><option>11:00</option><option>13:00</option><option>14:00</option><option>15:00</option><option>16:00</option></select></div>
 </div></div>
 <button type="submit" class="btn btn-primary">Confirmar agendamento</button>
 </form>
@@ -60,9 +60,9 @@
 {% block extra_js %}
 <script>
 var av={
-  canal:{bg:'var(--azul-claro)',bo:'#bfdbfe',co:'var(--azul)',tx:'<strong>Canal</strong> - 90 a 120 min por sessao.'},
-  aparelho:{bg:'var(--verde-claro)',bo:'#6ee7b7',co:'var(--verde)',tx:'<strong>Aparelho</strong> - 30 a 45 min.'},
-  extracao:{bg:'var(--laranja-claro)',bo:'#fcd34d',co:'var(--laranja)',tx:'<strong>Extracao</strong> - 45 a 60 min.'}
+  canal:{bg:'var(--azul-claro)',bo:'#bfdbfe',co:'var(--azul)',tx:'<strong>Canal</strong> — 90 a 120 min por sessão.'},
+  aparelho:{bg:'var(--verde-claro)',bo:'#6ee7b7',co:'var(--verde)',tx:'<strong>Aparelho</strong> — 30 a 45 min.'},
+  extracao:{bg:'var(--laranja-claro)',bo:'#fcd34d',co:'var(--laranja)',tx:'<strong>Extração</strong> — 45 a 60 min.'}
 };
 function sel(v){
   document.querySelectorAll('.proc-card').forEach(function(c){c.classList.remove('selecionado')});
