@@ -1,3 +1,4 @@
+
 # OdontoFlow
 
 ## Sobre o Projeto
@@ -74,14 +75,14 @@ cd odontoflow
 
 ### 3. Criar Ambiente Virtual
 
-Windows:
+**Windows:**
 
 ```bash
 python -m venv .odonto
 .odonto\Scripts\activate
 ```
 
-Linux:
+**Linux:**
 
 ```bash
 python3 -m venv .odonto
@@ -102,6 +103,51 @@ python app.py
 
 ---
 
+## Banco de Dados
+
+O OdontoFlow utiliza o **SQLite** para armazenar informações dos usuários, consultas e agendamentos.
+
+### Visualização com DB Browser for SQLite
+
+1. Instale o DB Browser for SQLite.
+2. Abra o programa e clique em **Open Database**.
+3. Selecione o arquivo do banco de dados do projeto (`database.db` ou `odontoflow.db`).
+4. Utilize a aba **Browse Data** para visualizar as tabelas e os registros.
+
+### Visualização pelo Terminal
+
+Abrir o banco de dados:
+
+```bash
+sqlite3 database.db
+```
+
+ou
+
+```bash
+sqlite3 odontoflow.db
+```
+
+Listar tabelas:
+
+```sql
+.tables
+```
+
+Visualizar os dados de uma tabela:
+
+```sql
+SELECT * FROM nome_da_tabela;
+```
+
+Sair do SQLite:
+
+```sql
+.exit
+```
+
+---
+
 ## Equipe
 
 * Bruno Henrique Alves dos Santos
@@ -113,5 +159,4 @@ python app.py
 
 ## Repositório
 
-GitHub:
-https://github.com/bruno07brw-commits/odontoflow
+GitHub: https://github.com/bruno07brw-commits/odontoflow
