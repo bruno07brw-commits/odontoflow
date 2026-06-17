@@ -121,7 +121,7 @@ def agendar():
         proc = request.form['procedimento']
         data = request.form['data']
         hora = request.form['hora']
-        obs = request.form['obs']
+        obs = request.form.get('obs', '')  # <-- corrigido
 
         with get_db() as conn:
             cur = conn.cursor()
