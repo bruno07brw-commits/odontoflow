@@ -1,5 +1,4 @@
 flask
-pymysql
 scikit-learn
 pandas
 numpy
