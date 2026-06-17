@@ -174,12 +174,45 @@ def dashboard():
     if not logado():
         return redirect(url_for('login'))
 
+    hoje = date.today().isoformat()
+
     with get_db() as conn:
         cur = conn.cursor()
-        cur.execute("SELECT * FROM agendamentos")
+        cur.execute("""
+            SELECT a.*, u.nome as nome_paciente
+            FROM agendamentos a
+            JOIN usuarios u ON u.id = a.usuario_id
+            WHERE a.data=?
+            ORDER BY a.hora
+        """, (hoje,))
         rows = cur.fetchall()
 
-    return render_template('dashboard.html', agendamentos=rows)
+    agendamentos = []
+    for r in rows:
+        r = enriquecer(r)
+        r['status_label'] = (
+            "Aguardando" if r['status'] == "aguardando"
+            else "Concluído" if r['status'] == "concluido"
+            else "Cancelado" if r['status'] == "cancelado"
+            else r['status']
+        )
+        agendamentos.append(r)
+
+    # estatísticas
+    total = len(agendamentos)
+    aguardando = sum(1 for r in agendamentos if r['status'] == 'aguardando')
+    concluidos = sum(1 for r in agendamentos if r['status'] == 'concluido')
+    tempos = [PROCEDIMENTOS.get(r['procedimento'], {}).get('minutos', 0) for r in agendamentos]
+    tempo_medio = f"{round(sum(tempos)/len(tempos))} min" if tempos else "—"
+
+    stats = {
+        'total': total,
+        'aguardando': aguardando,
+        'concluidos': concluidos,
+        'tempo_medio': tempo_medio
+    }
+
+    return render_template('dashboard.html', hoje=hoje, agendamentos=agendamentos, stats=stats)
 
 # ---------------- LOGOUT ----------------
 @app.route('/logout')
