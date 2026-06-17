@@ -181,6 +181,13 @@ def dashboard():
 
     return render_template('dashboard.html', agendamentos=rows)
 
+# ---------------- LOGOUT ----------------
+@app.route('/logout')
+def logout():
+    session.clear()  # limpa todos os dados da sessão
+    flash("Você saiu da conta")
+    return redirect(url_for('login'))
+
 # ---------------- START ----------------
 if __name__ == '__main__':
     init_db()
